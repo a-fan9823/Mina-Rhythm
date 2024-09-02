@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bee5wq3wrc2uw"]
+
+[node name="AcceptDialog" type="AcceptDialog"]
+auto_translate_mode = 1
+title = "Error!"
+initial_position = 2
+size = Vector2i(264, 80)
+visible = true
+dialog_text = "Please fill out all required fields!"
