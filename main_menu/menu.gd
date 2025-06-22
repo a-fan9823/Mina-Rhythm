@@ -313,8 +313,8 @@ func apply_slide_back_effect(else_button: Control):
 			var play = PLAY_SCENE.instantiate()
 			play.song_path = songs[else_button.id].get("Path","")
 			play.beatmap_index = selected_beatmap_index
-			get_tree().root.add_child(play)
-			get_tree().current_scene.queue_free()
+			get_tree().root.add_child(play,true)
+			get_node("/root/MainMenu").queue_free()
 			get_tree().current_scene = play
 
 

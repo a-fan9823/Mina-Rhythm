@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Mina-Rhythm"
-config/version="beta 2.2"
+config/version="beta 2.4"
 config/tags=PackedStringArray("game", "mina_rhythm")
 run/main_scene="res://main_menu/menu.tscn"
 config/features=PackedStringArray("4.4", "Mobile")
@@ -20,6 +20,10 @@ boot_splash/show_image=false
 boot_splash/fullsize=false
 boot_splash/use_filter=false
 config/icon="res://resources/minapak.svg"
+
+[audio]
+
+buses/default_bus_layout="default_bus_layout.tres"
 
 [autoload]
 
@@ -30,8 +34,6 @@ ControllerIcons="*res://addons/controller_icons/ControllerIcons.gd"
 [display]
 
 window/stretch/mode="canvas_items"
-window/stretch/aspect="ignore"
-window/vsync/vsync_mode=0
 
 [editor_plugins]
 
@@ -42,9 +44,12 @@ enabled=PackedStringArray("res://addons/controller_icons/plugin.cfg", "res://add
 folder_colors={
 "res://editor/": "red",
 "res://main_menu/": "blue",
+"res://main_menu/Buttons/": "orange",
 "res://misc/": "orange",
 "res://network/": "gray",
 "res://play/": "pink",
+"res://play/notes/": "yellow",
+"res://play/pause/": "teal",
 "res://resources/": "teal",
 "res://settings/": "green"
 }

@@ -2,11 +2,12 @@ extends CanvasLayer
 
 var song_path: String = ""
 var beatmap_index:int = -1
-var tap_scene = preload("res://play/single.tscn")
-var hold_scene = preload("res://play/hold.tscn")
-var light_scene = preload("res://play/light.tscn")
-var poly_scene = preload("res://play/poly.tscn")
-var judgement_scene = preload("res://play/judgement_text.tscn")
+@export var tap_scene:PackedScene
+@export var hold_scene:PackedScene
+@export var light_scene:PackedScene
+@export var poly_scene:PackedScene
+@export var judgement_scene = preload("res://play/judgement_text.tscn")
+@export var pause_scene:PackedScene
 var current_time: float = 0.0
 var scroll_speed: float = 0.5
 var hit_line: float = 500
@@ -31,6 +32,9 @@ var note_events: Array = []
 
 var timing_windows = [2, 25, 50, 100, 250, 400]
 var score_multipliers = [1000, 500, 250, 100, 50, -10]
+
+var in_pause_menu:=false
+var pause_menu:CanvasLayer
 
 func _ready() -> void:
 	if song_path:
@@ -147,159 +151,72 @@ func _ready() -> void:
 			$VideoPlayback.show()
 			$VideoPlayback.enable_auto_play = true
 	note_events.sort()
+	Global.Settings_changed.connect(_on_settings_change)
 
+func _on_settings_change():
+	auto_play = bool(Global.Settings.get("autoplay",false))
+	extra_info = bool(Global.Settings.get("extra_info",false))
 
 var _prev_score = null
 var _prev_combo = null
 
 func _process(delta: float) -> void:
-	if auto_play:
-		$auto_play_watermarks.show()
-		$auto_play_watermarks.visible = true
-	current_time += delta * 1000.0
-	for note in get_children():
-		if note.has_meta("is_note"):
-			note.position.y += scroll_speed * delta * 1000.0
-			if note.get_meta("type") == "poly":
-				note.get_child(0).position.y = min(note.size.y - 50, hit_line - note.position.y - 50)
-			var prev_y = note.position.y
-			if auto_play:
-				if note.get_meta("type") == "hold":
-					if !note.has_meta("autodone"):
-						var time = note.get_meta("time")
-						if current_time < note.get_meta("end_time") and current_time >= time:
-							if not note.has_meta("autoflag"):
-								if (prev_y + note.size.y >= hit_line) or (note.position.y + note.size.y >= hit_line):
-									score += score_multipliers[0]
-									update_combo(combo+1)
-									var alabel = judgement_scene.instantiate()
-									alabel.text = timing_displays[0]
-									alabel.position = Vector2(note.position.x + note.size.x, hit_line - 100)
-									add_child(alabel)
-									note.set_meta("autoflag", true)
-							var max_height = hit_line - note.position.y
-							note.size.y = max_height
-						if note.has_meta("autoflag") and not note.has_meta("autodone") and (prev_y >= hit_line or note.position.y >= hit_line):
-							score += score_multipliers[0]
-							note.size.y = 0
-							update_combo(combo+1)
-							var alabel = judgement_scene.instantiate()
-							alabel.text = timing_displays[0]
-							alabel.position = Vector2(note.position.x + note.size.x, hit_line - 100)
-							add_child(alabel)
-							note.set_meta("autodone", true)
-							note.queue_free()
-				else:
-					if note.get_meta("time") - current_time <= 1:
-						if note.get_meta("type") == "light":
-							score += score_multipliers[2]
-							update_combo(combo+1)
-						else:
-							score += score_multipliers[0]
-							update_combo(combo+1)
-						var alabel = judgement_scene.instantiate()
-						alabel.text = timing_displays[0]
-						alabel.position = Vector2(note.position.x, note.position.y - 100)
-						add_child(alabel)
-						note.set_meta("hit", true)
-						note.queue_free()
-			else:
-				if !note.get_meta("hit"):
-					if note.get_meta("type") == "hold" || note.get_meta("type") == "poly":
-						if note.get_meta("type") == "hold":
-							if !note.has_meta("check_hold"):
-								if note.position.y + note.size.y >= hit_line + timing_windows[3]:
-									score += score_multipliers[5]
-									update_combo(0)
-									var alabel = judgement_scene.instantiate()
-									alabel.text = timing_displays[5]
-									miss_lane(note.get_meta("lane"))
-									alabel.position = Vector2(note.position.x, hit_line - 100)
-									add_child(alabel)
-									note.self_modulate.v = 0.3
-									note.set_meta("hit", true)
-						if note.get_meta("type") == "poly":
-							if note.get_meta("hit_count") >= note.get_meta("poly"):
-								var score_to_add = score_multipliers[1]
-								score += score_to_add
-								if score_to_add > 0:
-									update_combo(combo+1)
-								else:
-									update_combo(0)
-								var judgement = timing_displays[1]
-								score_text.text = str("Score: ",score," (",get_current_rating(),")")
-								var judgement_label = judgement_scene.instantiate()
-								judgement_label.text = judgement
-								judgement_label.position.x = note.position.x
-								judgement_label.position.y = hit_line - 50
-								add_child(judgement_label)
-								note.set_meta("hit", true)
-								note.queue_free()
-							if note.position.y >= hit_line:
-								var score_index = clamp(ceil((1 - (float(note.get_meta("hit_count")) / max(note.get_meta("poly")+ 1, 1))) * 4) + 1, 1, 5)
-								var score_to_add = score_multipliers[score_index]
-								score += score_to_add
-								if score_to_add > 0:
-									update_combo(combo+1)
-								else:
-									update_combo(0)
-								var judgement = timing_displays[score_index]
-								score_text.text = str("Score: ",score," (",get_current_rating(),")")
-								var judgement_label = judgement_scene.instantiate()
-								judgement_label.text = judgement
-								judgement_label.position.x = note.position.x
-								judgement_label.position.y = hit_line - 50
-								add_child(judgement_label)
-								note.self_modulate.v = 0.3
-								note.set_meta("hit", true)
-								note.get_child(0).hide()
-					else:
-						if note.position.y >= hit_line + timing_windows[3]:
-							score += score_multipliers[5]
-							update_combo(0)
-							var alabel = judgement_scene.instantiate()
-							alabel.text = timing_displays[5]
-							miss_lane(note.get_meta("lane"))
-							alabel.position = Vector2(note.position.x, hit_line - 100)
-							add_child(alabel)
-							note.self_modulate.v = 0.3
-							note.set_meta("hit", true)
-					if note.get_meta("type") == "light":
-						if Input.is_action_pressed("lane" + str(note.get_meta("lane"))):
-							if note.get_meta("time") - current_time <= 1:
-								score += score_multipliers[2]
+	if !in_pause_menu:
+		if auto_play:
+			$auto_play_watermarks.show()
+		current_time += delta * 1000.0
+		for note in get_children():
+			if note.has_meta("is_note"):
+				note.position.y += scroll_speed * delta * 1000.0
+				if note.get_meta("type") == "poly":
+					note.get_child(0).position.y = min(note.size.y - 50, hit_line - note.position.y - 50)
+				var prev_y = note.position.y
+				if auto_play:
+					if note.get_meta("type") == "hold":
+						if !note.has_meta("autodone"):
+							var time = note.get_meta("time")
+							if current_time < note.get_meta("end_time") and current_time >= time:
+								if not note.has_meta("autoflag"):
+									if (prev_y + note.size.y >= hit_line) or (note.position.y + note.size.y >= hit_line):
+										score += score_multipliers[0]
+										update_combo(combo+1)
+										var alabel = judgement_scene.instantiate()
+										alabel.text = timing_displays[0]
+										alabel.position = Vector2(note.position.x + note.size.x, hit_line - 100)
+										add_child(alabel)
+										note.set_meta("autoflag", true)
+								var max_height = hit_line - note.position.y
+								note.size.y = max_height
+							if note.has_meta("autoflag") and not note.has_meta("autodone") and (prev_y >= hit_line or note.position.y >= hit_line):
+								score += score_multipliers[0]
+								note.size.y = 0
 								update_combo(combo+1)
 								var alabel = judgement_scene.instantiate()
-								alabel.text = timing_displays[1]
-								alabel.position = Vector2(note.position.x, note.position.y - 100)
+								alabel.text = timing_displays[0]
+								alabel.position = Vector2(note.position.x + note.size.x, hit_line - 100)
 								add_child(alabel)
-								note.set_meta("hit", true)
+								note.set_meta("autodone", true)
 								note.queue_free()
-				if note.get_meta("type") == "hold":
-					if note.position.y + note.size.y <= timing_windows[4] or note.has_meta("check_hold"):
-						if note.has_meta("check_hold"):
-							if current_time < note.get_meta("end_time"):
-								var remaining = note.get_meta("end_time") - current_time
-								var new_height = remaining * scroll_speed
-								var max_height = hit_line - note.position.y
-								note.size.y = min(new_height, max_height)
-
-							var lane_key = "lane" + str(note.get_meta("lane"))
-							if Input.is_action_pressed(lane_key):
-								if not note.has_meta("first_input_time"):
-									note.set_meta("first_input_time", current_time)
-									var first_offset = abs(current_time - note.get_meta("time"))
-									note.set_meta("first_rating", get_rating(first_offset))
-									note.set_meta("was_held", true)
-								else:
-									note.set_meta("last_pressed_time", current_time)
-									if not note.has_meta("hold_started") and (current_time - note.get_meta("first_input_time") >= HOLD_ACTIVATION_THRESHOLD):
-										note.set_meta("hold_started", true)
+					else:
+						if note.get_meta("time") - current_time <= 1:
+							if note.get_meta("type") == "light":
+								score += score_multipliers[2]
+								update_combo(combo+1)
 							else:
-								if not note.has_meta("last_pressed_time"):
-									note.set_meta("last_pressed_time", current_time)
-								elif current_time - note.get_meta("last_pressed_time") >= HOLD_RELEASE_THRESHOLD:
-									if not note.has_meta("hold_started"):
+								score += score_multipliers[0]
+								update_combo(combo+1)
+							var alabel = judgement_scene.instantiate()
+							alabel.text = timing_displays[0]
+							alabel.position = Vector2(note.position.x, note.position.y - 100)
+							add_child(alabel)
+							note.set_meta("hit", true)
+							note.queue_free()
+				else:
+					if !note.get_meta("hit"):
+						if note.get_meta("type") == "hold" || note.get_meta("type") == "poly":
+							if note.get_meta("type") == "hold":
+								if !note.has_meta("check_hold"):
+									if note.position.y + note.size.y >= hit_line + timing_windows[3]:
 										score += score_multipliers[5]
 										update_combo(0)
 										var alabel = judgement_scene.instantiate()
@@ -309,72 +226,184 @@ func _process(delta: float) -> void:
 										add_child(alabel)
 										note.self_modulate.v = 0.3
 										note.set_meta("hit", true)
-										note.set_meta("hold_cancelled", true)
-										note.set_meta("release_rating", timing_displays[5])
-										note.set_meta("check_hold", false)
-									elif not note.has_meta("release_time"):
-										note.set_meta("release_time", current_time)
-										var release_offset = abs(current_time - note.get_meta("end_time"))
-										note.set_meta("release_rating", get_rating(release_offset))
-										note.set_meta("check_hold", false)
-						if current_time >= note.get_meta("end_time") and not note.has_meta("end_rating_shown"):
-							var end_rating: String = ""
-							if note.has_meta("hold_cancelled") or not note.has_meta("was_held"):
-								end_rating = timing_displays[5]
-								miss_lane(note.get_meta("lane"))
-							else:
-								var actual_release_time = note.get_meta("release_time") if note.has_meta("release_time") else current_time
-								var end_offset = abs(note.get_meta("end_time") - actual_release_time)
-								end_rating = get_rating(end_offset)
-
-							score += score_multipliers[timing_displays.find(end_rating)]
-							if !end_rating.is_empty() and timing_displays.find(end_rating) < 5:
-								update_combo(combo+1)
-							else:
+							if note.get_meta("type") == "poly":
+								if note.get_meta("hit_count") >= note.get_meta("poly"):
+									var score_to_add = score_multipliers[1]
+									score += score_to_add
+									if score_to_add > 0:
+										update_combo(combo+1)
+									else:
+										update_combo(0)
+									var judgement = timing_displays[1]
+									score_text.text = str("Score: ",score," (",get_current_rating(),")")
+									var judgement_label = judgement_scene.instantiate()
+									judgement_label.text = judgement
+									judgement_label.position.x = note.position.x
+									judgement_label.position.y = hit_line - 50
+									add_child(judgement_label)
+									note.set_meta("hit", true)
+									note.queue_free()
+								if note.position.y >= hit_line:
+									var score_index = clamp(ceil((1 - (float(note.get_meta("hit_count")) / max(note.get_meta("poly")+ 1, 1))) * 4) + 1, 1, 5)
+									var score_to_add = score_multipliers[score_index]
+									score += score_to_add
+									if score_to_add > 0:
+										update_combo(combo+1)
+									else:
+										update_combo(0)
+									var judgement = timing_displays[score_index]
+									score_text.text = str("Score: ",score," (",get_current_rating(),")")
+									var judgement_label = judgement_scene.instantiate()
+									judgement_label.text = judgement
+									judgement_label.position.x = note.position.x
+									judgement_label.position.y = hit_line - 50
+									add_child(judgement_label)
+									note.self_modulate.v = 0.3
+									note.set_meta("hit", true)
+									note.get_child(0).hide()
+						else:
+							if note.position.y >= hit_line + timing_windows[3]:
+								score += score_multipliers[5]
 								update_combo(0)
-							var alabel = judgement_scene.instantiate()
-							alabel.text = end_rating
-							alabel.position = Vector2(note.position.x + note.size.x, hit_line - 100)
-							add_child(alabel)
-							note.set_meta("end_rating_shown", true)
-							note.queue_free()
-	if end_time:
-		if float(end_time) != 0:
-			if float(end_time) - current_time <= 1:
-				$AudioStreamPlayer.stop()
-				$VideoPlayback.queue_free()
+								var alabel = judgement_scene.instantiate()
+								alabel.text = timing_displays[5]
+								miss_lane(note.get_meta("lane"))
+								alabel.position = Vector2(note.position.x, hit_line - 100)
+								add_child(alabel)
+								note.self_modulate.v = 0.3
+								note.set_meta("hit", true)
+						if note.get_meta("type") == "light":
+							if Input.is_action_pressed("lane" + str(note.get_meta("lane"))):
+								if note.get_meta("time") - current_time <= 1:
+									score += score_multipliers[2]
+									update_combo(combo+1)
+									var alabel = judgement_scene.instantiate()
+									alabel.text = timing_displays[1]
+									alabel.position = Vector2(note.position.x, note.position.y - 100)
+									add_child(alabel)
+									note.set_meta("hit", true)
+									note.queue_free()
+					if note.get_meta("type") == "hold":
+						if note.position.y + note.size.y <= timing_windows[4] or note.has_meta("check_hold"):
+							if note.has_meta("check_hold"):
+								if current_time < note.get_meta("end_time"):
+									var remaining = note.get_meta("end_time") - current_time
+									var new_height = remaining * scroll_speed
+									var max_height = hit_line - note.position.y
+									note.size.y = min(new_height, max_height)
 
-	if _prev_score != score || _prev_combo != combo: #designed so it doesn't change text every frame and attempt to do it only when needed
-		if score_text:
-			score_text.text = str("Score: ",score," (",get_current_rating()," / ",get_overall_rating(),")\n","Biggest Combo: ",max_combo,"" if not extra_info else str("\nRating Ratio: ", round(ratio * 100.0) / 100.0, "\nPossible Score: ", total_possible_score, "\nTotal notes: ", total_notes,"\nPossible Combo: ",possible_combo))
-		_prev_score = score
-		_prev_combo = combo
+								var lane_key = "lane" + str(note.get_meta("lane"))
+								if Input.is_action_pressed(lane_key):
+									if not note.has_meta("first_input_time"):
+										note.set_meta("first_input_time", current_time)
+										var first_offset = abs(current_time - note.get_meta("time"))
+										note.set_meta("first_rating", get_rating(first_offset))
+										note.set_meta("was_held", true)
+									else:
+										note.set_meta("last_pressed_time", current_time)
+										if not note.has_meta("hold_started") and (current_time - note.get_meta("first_input_time") >= HOLD_ACTIVATION_THRESHOLD):
+											note.set_meta("hold_started", true)
+								else:
+									if not note.has_meta("last_pressed_time"):
+										note.set_meta("last_pressed_time", current_time)
+									elif current_time - note.get_meta("last_pressed_time") >= HOLD_RELEASE_THRESHOLD:
+										if not note.has_meta("hold_started"):
+											score += score_multipliers[5]
+											update_combo(0)
+											var alabel = judgement_scene.instantiate()
+											alabel.text = timing_displays[5]
+											miss_lane(note.get_meta("lane"))
+											alabel.position = Vector2(note.position.x, hit_line - 100)
+											add_child(alabel)
+											note.self_modulate.v = 0.3
+											note.set_meta("hit", true)
+											note.set_meta("hold_cancelled", true)
+											note.set_meta("release_rating", timing_displays[5])
+											note.set_meta("check_hold", false)
+										elif not note.has_meta("release_time"):
+											note.set_meta("release_time", current_time)
+											var release_offset = abs(current_time - note.get_meta("end_time"))
+											note.set_meta("release_rating", get_rating(release_offset))
+											note.set_meta("check_hold", false)
+							if current_time >= note.get_meta("end_time") and not note.has_meta("end_rating_shown"):
+								var end_rating: String = ""
+								if note.has_meta("hold_cancelled") or not note.has_meta("was_held"):
+									end_rating = timing_displays[5]
+									miss_lane(note.get_meta("lane"))
+								else:
+									var actual_release_time = note.get_meta("release_time") if note.has_meta("release_time") else current_time
+									var end_offset = abs(note.get_meta("end_time") - actual_release_time)
+									end_rating = get_rating(end_offset)
 
+								score += score_multipliers[timing_displays.find(end_rating)]
+								if !end_rating.is_empty() and timing_displays.find(end_rating) < 5:
+									update_combo(combo+1)
+								else:
+									update_combo(0)
+								var alabel = judgement_scene.instantiate()
+								alabel.text = end_rating
+								alabel.position = Vector2(note.position.x + note.size.x, hit_line - 100)
+								add_child(alabel)
+								note.set_meta("end_rating_shown", true)
+								note.queue_free()
+		if end_time:
+			if float(end_time) != 0:
+				if float(end_time) - current_time <= 1:
+					$AudioStreamPlayer.stop()
+					$VideoPlayback.queue_free()
+
+		if _prev_score != score || _prev_combo != combo: #designed so it doesn't change text every frame and attempt to do it only when needed
+			if score_text:
+				score_text.text = str("Score: ",score," (",get_current_rating()," / ",get_overall_rating(),")\n","Biggest Combo: ",max_combo,"" if not extra_info else str("\nRating Ratio: ", round(ratio * 100.0) / 100.0, "\nPossible Score: ", total_possible_score, "\nTotal notes: ", total_notes,"\nPossible Combo: ",possible_combo))
+			_prev_score = score
+			_prev_combo = combo
+
+func pause_song():
+	in_pause_menu = true
+	if $VideoPlayback.visible:
+		$VideoPlayback.pause()
+	$AudioStreamPlayer.stream_paused = true
+	var pause = pause_scene.instantiate()
+	add_child(pause)
+	pause_menu=pause
+
+func unpause_song():
+	in_pause_menu = false
+	if $VideoPlayback.visible:
+		$VideoPlayback.play()
+	$AudioStreamPlayer.stream_paused = false
+	pause_menu.hide()
+	pause_menu.queue_free()
 
 func _input(event):
-	if not auto_play and event is InputEventKey:
-		if event.pressed:
-			if event.is_action_pressed("lane0"):
-				check_input(0)
-				on_lane_pressed(0)
-			elif event.is_action_pressed("lane1"):
-				check_input(1)
-				on_lane_pressed(1)
-			elif event.is_action_pressed("lane2"):
-				check_input(2)
-				on_lane_pressed(2)
-			elif event.is_action_pressed("lane3"):
-				check_input(3)
-				on_lane_pressed(3)
-		else:
-			if InputMap.event_is_action(event, "lane0"):
-				on_lane_released(0)
-			elif InputMap.event_is_action(event, "lane1"):
-				on_lane_released(1)
-			elif InputMap.event_is_action(event, "lane2"):
-				on_lane_released(2)
-			elif InputMap.event_is_action(event, "lane3"):
-				on_lane_released(3)
+	if !in_pause_menu:
+		if event is InputEventKey:
+			if event.is_action_pressed("ui_cancel"):
+				pause_song()
+			else:
+				if !auto_play:
+					if event.pressed:
+						if event.is_action_pressed("lane0"):
+							check_input(0)
+							on_lane_pressed(0)
+						elif event.is_action_pressed("lane1"):
+							check_input(1)
+							on_lane_pressed(1)
+						elif event.is_action_pressed("lane2"):
+							check_input(2)
+							on_lane_pressed(2)
+						elif event.is_action_pressed("lane3"):
+							check_input(3)
+							on_lane_pressed(3)
+					else:
+						if InputMap.event_is_action(event, "lane0"):
+							on_lane_released(0)
+						elif InputMap.event_is_action(event, "lane1"):
+							on_lane_released(1)
+						elif InputMap.event_is_action(event, "lane2"):
+							on_lane_released(2)
+						elif InputMap.event_is_action(event, "lane3"):
+							on_lane_released(3)
 
 
 func check_input(lane):

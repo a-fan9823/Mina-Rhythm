@@ -10,6 +10,8 @@ var settings_file = "user://user_data/settings.json"
 var Settings = {}
 var default_settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":60,"vsync":DisplayServer.VSyncMode.VSYNC_ENABLED,"show_fps":false,"autoplay":false,"extra_info":false}
 
+signal Settings_changed
+
 var fps_counter
 func _ready():
 	var fps_count = Label.new()
@@ -48,6 +50,7 @@ func clear_temp():
 		DirAccess.remove_absolute("user://temp")
 		DirAccess.make_dir_absolute("user://temp")
 
+var last_settings:Dictionary
 var last_target_fps
 var last_vsync
 var last_fps
@@ -136,6 +139,10 @@ func load_json_dict(path: String) -> Dictionary:
 		push_error("JSON file does not contain a dictionary: " + path)
 		return {}
 
+func save_settings() -> void:
+	emit_signal("Settings_changed")
+	save_json_dict(settings_file,Settings)
+
 func save_json_dict(path: String, data: Dictionary) -> void:
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
@@ -146,3 +153,31 @@ func save_json_dict(path: String, data: Dictionary) -> void:
 	file.store_string(json_text)
 	file.flush()
 	file.close()
+
+func reload_play(song_path: String, beatmap_index: int):
+	var next_scene = preload("res://play/play.tscn")
+
+	get_tree().current_scene.queue_free()
+
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var instance = next_scene.instantiate()
+	instance.song_path = song_path
+	instance.beatmap_index = beatmap_index
+
+	get_tree().root.add_child(instance)
+	get_tree().current_scene = instance
+
+func goto_scene(scene:String):
+	var load_scene = load(scene)
+	if load_scene:
+		get_tree().current_scene.queue_free()
+
+		await get_tree().process_frame
+		await get_tree().process_frame
+
+		var instance = load_scene.instantiate()
+
+		get_tree().root.add_child(instance)
+		get_tree().current_scene = instance

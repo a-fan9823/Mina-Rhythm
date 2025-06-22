@@ -1,8 +1,13 @@
-[gd_scene load_steps=15 format=3 uid="uid://bcds32gyse1x5"]
+[gd_scene load_steps=20 format=3 uid="uid://bcds32gyse1x5"]
 
 [ext_resource type="Script" uid="uid://l8vg358nvp35" path="res://play/play.gd" id="1_d4ve6"]
 [ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="2_ntrav"]
 [ext_resource type="FontFile" uid="uid://brb0fwgeqxoch" path="res://resources/Vividly-extended-Regular.ttf" id="2_rig6f"]
+[ext_resource type="PackedScene" uid="uid://cp0jlegr7nf6s" path="res://play/notes/tap.tscn" id="2_ufcqn"]
+[ext_resource type="PackedScene" uid="uid://cdgq4kujylx5j" path="res://play/notes/hold.tscn" id="3_od4te"]
+[ext_resource type="PackedScene" uid="uid://c8jr4k8rsthje" path="res://play/notes/light.tscn" id="4_g4ch7"]
+[ext_resource type="PackedScene" uid="uid://dxixo1154bwmu" path="res://play/notes/poly.tscn" id="5_paftx"]
+[ext_resource type="PackedScene" uid="uid://b0f4c5ykn34bj" path="res://play/pause/pause_menu.tscn" id="6_od4te"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gt31y"]
 bg_color = Color(0.0968115, 0.0968115, 0.0968115, 0.662745)
@@ -43,8 +48,13 @@ font_color = Color(1, 1, 1, 0.172549)
 [sub_resource type="LabelSettings" id="LabelSettings_h1a3t"]
 font_color = Color(1, 1, 1, 0.262745)
 
-[node name="CanvasLayer" type="CanvasLayer" node_paths=PackedStringArray("score_text")]
+[node name="Play" type="CanvasLayer" node_paths=PackedStringArray("score_text")]
 script = ExtResource("1_d4ve6")
+tap_scene = ExtResource("2_ufcqn")
+hold_scene = ExtResource("3_od4te")
+light_scene = ExtResource("4_g4ch7")
+poly_scene = ExtResource("5_paftx")
+pause_scene = ExtResource("6_od4te")
 score_text = NodePath("Label")
 
 [node name="VideoPlayback" type="Control" parent="."]

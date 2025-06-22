@@ -12,7 +12,7 @@ func _ready() -> void:
 
 func init_audio_settings():
 	var busses:Array[Dictionary] = []
-	for i in AudioServer.bus_count:
+	for i in min(AudioServer.bus_count,3):
 		busses.append({"Name":AudioServer.get_bus_name(i),"Id":i})
 	
 	for bus in busses:
@@ -81,10 +81,10 @@ func _on_VolumeSlider_value_changed(value:float,index:int):
 		return
 	
 	value /= 100
-	AudioServer.set_bus_volume_db(bus.get("Id"), linear_to_db(value))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus.get("Name","")), linear_to_db(value))
 	slider.valueLabel.text = "Volume: " + str(int(round(value*100))) + "%"
 	Global.Settings[str(bus.get("Name")).to_lower()+"_volume"] = linear_to_db(value)
-	Global.save_json_dict(Global.settings_file,Global.Settings)
+	Global.save_settings()
 
 func _on_toggle_value_changed(value:bool,key:String):
 	var toggle
@@ -94,7 +94,7 @@ func _on_toggle_value_changed(value:bool,key:String):
 				toggle = option
 	toggle.button_pressed = value
 	Global.Settings[key] = value
-	Global.save_json_dict(Global.settings_file,Global.Settings)
+	Global.save_settings()
 
 func _on_exit_pressed() -> void:
 	$Panel/Exit.disabled = true
