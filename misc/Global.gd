@@ -8,7 +8,7 @@ var IRLS = preload("res://misc/IRLS.gd").new()
 var settings_file = "user://user_data/settings.json"
 
 var Settings = {}
-var default_settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":60,"vsync":DisplayServer.VSyncMode.VSYNC_ENABLED,"show_fps":false}
+var default_settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":60,"vsync":DisplayServer.VSyncMode.VSYNC_ENABLED,"show_fps":false,"autoplay":false,"extra_info":false}
 
 var fps_counter
 func _ready():

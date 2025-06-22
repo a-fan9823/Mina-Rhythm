@@ -1,45 +1,44 @@
+<<<<<<< Updated upstream
 [gd_scene load_steps=11 format=3 uid="uid://c2cvll7ctu25a"]
+=======
+[gd_scene load_steps=12 format=3 uid="uid://c2cvll7ctu25a"]
+>>>>>>> Stashed changes
 
-[ext_resource type="Script" path="res://main_menu/menu.gd" id="1_ufmj0"]
-[ext_resource type="Script" path="res://main_menu/buttons.gd" id="2_4y3y1"]
+[ext_resource type="Script" uid="uid://lnngc5m8jdqx" path="res://main_menu/menu.gd" id="1_ufmj0"]
 [ext_resource type="Texture2D" uid="uid://c22gq1expir0n" path="res://resources/editor.svg" id="2_lfsci"]
 [ext_resource type="Texture2D" uid="uid://ds1xqe54sk5pa" path="res://resources/settings2.svg" id="3_b0c7s"]
+<<<<<<< Updated upstream
 [ext_resource type="Script" path="res://main_menu/settings_panel.gd" id="5_1ccvm"]
 [ext_resource type="PackedScene" uid="uid://dj1bm15kejiv4" path="res://main_menu/beatmap_button.tscn" id="6_2vrl2"]
+=======
+[ext_resource type="PackedScene" uid="uid://djyl4hm03dta5" path="res://settings/settings_panel.tscn" id="4_m2eq4"]
+[ext_resource type="Script" uid="uid://d3fcdi0sa5w1e" path="res://main_menu/Buttons/beatmap_button.gd" id="4_xpv0w"]
+[ext_resource type="Script" uid="uid://dbrsvgapman1s" path="res://main_menu/beatmap_menu.gd" id="7_33wq2"]
+>>>>>>> Stashed changes
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y4clx"]
 bg_color = Color(0.151276, 0.151276, 0.151276, 1)
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pbiia"]
-bg_color = Color(0.152941, 0.152941, 0.152941, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_bottom = 3
-border_color = Color(0.577008, 0.577008, 0.577008, 0.0980392)
-border_blend = true
-corner_radius_top_left = 14
-corner_radius_bottom_left = 14
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b2exo"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
 
-[sub_resource type="LabelSettings" id="LabelSettings_q27qt"]
-font_size = 20
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ekass"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_o4346"]
-font_size = 13
+[sub_resource type="Theme" id="Theme_qfrjs"]
+Button/styles/focus = SubResource("StyleBoxEmpty_ekass")
 
-[node name="CanvasLayer" type="CanvasLayer"]
+[sub_resource type="LabelSettings" id="LabelSettings_yb2cg"]
+
+[node name="CanvasLayer" type="CanvasLayer" node_paths=PackedStringArray("scroll_container")]
 follow_viewport_enabled = true
 script = ExtResource("1_ufmj0")
-
-[node name="BackgroundImage" type="TextureRect" parent="."]
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-expand_mode = 1
+scroll_container = NodePath("ScrollContainer")
 
 [node name="preview dim" type="ColorRect" parent="."]
 self_modulate = Color(1, 1, 1, 0.501961)
@@ -50,18 +49,18 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
-[node name="ColorRect3" type="ColorRect" parent="."]
+[node name="BackgroundColor" type="ColorRect" parent="."]
 z_index = -4
 offset_right = 1152.0
 offset_bottom = 648.0
 color = Color(0.1209, 0.127877, 0.13, 1)
 
-[node name="Panel" type="Panel" parent="."]
+[node name="TopNav" type="Panel" parent="."]
 offset_right = 1152.0
 offset_bottom = 42.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_y4clx")
 
-[node name="Button" type="Button" parent="Panel"]
+[node name="Editor" type="Button" parent="TopNav"]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 5.0
@@ -70,14 +69,14 @@ offset_bottom = 37.0
 disabled = true
 icon = ExtResource("2_lfsci")
 
-[node name="Control" type="Control" parent="Panel/Button"]
+[node name="Control" type="Control" parent="TopNav/Editor"]
 clip_contents = true
 anchors_preset = 0
 offset_left = 36.0
 offset_right = 380.0
 offset_bottom = 32.0
 
-[node name="Label" type="Label" parent="Panel/Button/Control"]
+[node name="Label" type="Label" parent="TopNav/Editor/Control"]
 layout_mode = 0
 offset_left = -325.0
 offset_top = 3.0
@@ -87,21 +86,21 @@ text = "editor (still very very under contstruction)"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Control2" type="Control" parent="Panel/Button"]
+[node name="Control2" type="Control" parent="TopNav/Editor"]
 clip_contents = true
 anchors_preset = 0
 offset_left = 32.0
 offset_right = 36.0
 offset_bottom = 32.0
 
-[node name="ColorRect" type="ColorRect" parent="Panel/Button/Control2"]
+[node name="ColorRect" type="ColorRect" parent="TopNav/Editor/Control2"]
 layout_mode = 0
 offset_left = -20.0
 offset_top = 3.0
 offset_right = -18.0
 offset_bottom = 30.0
 
-[node name="Button2" type="Button" parent="Panel"]
+[node name="Settings" type="Button" parent="TopNav"]
 layout_mode = 0
 offset_left = 992.0
 offset_top = 5.0
@@ -109,14 +108,14 @@ offset_right = 1024.0
 offset_bottom = 37.0
 icon = ExtResource("3_b0c7s")
 
-[node name="Control" type="Control" parent="Panel/Button2"]
+[node name="Control" type="Control" parent="TopNav/Settings"]
 clip_contents = true
 anchors_preset = 0
 offset_left = -70.0
 offset_right = -5.0
 offset_bottom = 32.0
 
-[node name="Label" type="Label" parent="Panel/Button2/Control"]
+[node name="Label" type="Label" parent="TopNav/Settings/Control"]
 layout_mode = 0
 offset_left = 70.0
 offset_top = 3.0
@@ -126,14 +125,14 @@ text = "settings"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Control2" type="Control" parent="Panel/Button2"]
+[node name="Control2" type="Control" parent="TopNav/Settings"]
 clip_contents = true
 anchors_preset = 0
 offset_left = -5.0
 offset_right = -1.0
 offset_bottom = 32.0
 
-[node name="ColorRect" type="ColorRect" parent="Panel/Button2/Control2"]
+[node name="ColorRect" type="ColorRect" parent="TopNav/Settings/Control2"]
 layout_mode = 0
 offset_left = 30.0
 offset_top = 3.0
@@ -141,14 +140,14 @@ offset_right = 32.0
 offset_bottom = 30.0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
-offset_top = 86.0
+offset_top = 64.0
 offset_right = 1153.0
-offset_bottom = 86.0
+offset_bottom = 648.0
+horizontal_scroll_mode = 0
 
-[node name="Control" type="Control" parent="ScrollContainer" node_paths=PackedStringArray("scroll_container")]
+[node name="SongButtons" type="Control" parent="ScrollContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-script = ExtResource("2_4y3y1")
-scroll_container = NodePath("..")
 
 [node name="SelectedBeatmap" parent="." instance=ExtResource("6_2vrl2")]
 unique_name_in_owner = true
@@ -170,18 +169,18 @@ access = 2
 filters = PackedStringArray("*.minapak,*.osz")
 use_native_dialog = true
 
-[node name="AcceptDialog" type="AcceptDialog" parent="."]
+[node name="Popup" type="AcceptDialog" parent="."]
 unique_name_in_owner = true
 title = "Import status"
 initial_position = 2
-size = Vector2i(367, 100)
+size = Vector2i(367, 106)
 unresizable = true
 always_on_top = true
 popup_window = true
-dialog_text = "Something went very Very wrong...."
+dialog_text = "\"Dialogue Node\" -MinikoMew, Troubleshooting 2025"
 dialog_autowrap = true
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="TransitionOverlay" type="ColorRect" parent="."]
 visible = false
 top_level = true
 z_index = 6
@@ -191,25 +190,103 @@ offset_right = 3593.0
 offset_bottom = 1208.0
 color = Color(0, 0, 0, 1)
 
-[node name="SettingsPanel" type="Panel" parent="."]
+[node name="SelectedBeatmap" type="Control" parent="." node_paths=PackedStringArray("internal_button", "label")]
+unique_name_in_owner = true
 visible = false
-top_level = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 641.0
+offset_top = 343.0
+offset_right = 1152.0
+offset_bottom = 439.0
+script = ExtResource("4_xpv0w")
+internal_button = NodePath("PanelContainer/Button")
+label = NodePath("Label")
+id = -1
+
+[node name="PanelContainer" type="PanelContainer" parent="SelectedBeatmap"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -511.0
+offset_bottom = 92.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_b2exo")
+
+[node name="Button" type="Button" parent="SelectedBeatmap/PanelContainer"]
+layout_mode = 2
+theme = SubResource("Theme_qfrjs")
+action_mode = 0
+flat = true
+clip_text = true
+
+[node name="Label" type="Label" parent="SelectedBeatmap"]
+layout_mode = 2
+offset_top = 16.0
+offset_right = 511.0
+offset_bottom = 75.0
+label_settings = SubResource("LabelSettings_yb2cg")
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 1
+text_overrun_behavior = 3
+
+[node name="OverlayDim" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.619608)
+
+[node name="SettingsPanel" parent="." instance=ExtResource("4_m2eq4")]
+visible = false
+
+[node name="BeatmapSelectMenu" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
 z_index = 2
-offset_left = 1152.0
-offset_right = 1437.0
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
 offset_bottom = 648.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_pbiia")
-script = ExtResource("5_1ccvm")
+mouse_filter = 2
+script = ExtResource("7_33wq2")
 
-[node name="Exit" type="Button" parent="SettingsPanel"]
+[node name="BeatmapBox" type="PanelContainer" parent="BeatmapSelectMenu"]
+z_index = 7
 layout_mode = 0
-offset_left = 13.0
-offset_top = 8.0
-offset_right = 45.0
-offset_bottom = 40.0
-text = ">"
+offset_left = 249.0
+offset_top = 73.0
+offset_right = 876.0
+offset_bottom = 621.0
 
-[node name="Control" type="Control" parent="SettingsPanel/Exit"]
+[node name="scroll" type="ScrollContainer" parent="BeatmapSelectMenu/BeatmapBox"]
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="BeatmapButtons" type="VBoxContainer" parent="BeatmapSelectMenu/BeatmapBox/scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 100
+
+[node name="Exit" type="Button" parent="BeatmapSelectMenu"]
+z_index = 8
+layout_mode = 0
+offset_left = 256.0
+offset_top = 80.0
+offset_right = 288.0
+offset_bottom = 112.0
+text = "X"
+
+[node name="Control" type="Control" parent="BeatmapSelectMenu/Exit"]
 clip_contents = true
 layout_mode = 3
 anchors_preset = 0
@@ -217,7 +294,7 @@ offset_left = 36.0
 offset_right = 380.0
 offset_bottom = 32.0
 
-[node name="Label" type="Label" parent="SettingsPanel/Exit/Control"]
+[node name="Label" type="Label" parent="BeatmapSelectMenu/Exit/Control"]
 layout_mode = 0
 offset_left = -325.0
 offset_top = 3.0
@@ -227,7 +304,7 @@ text = "Close"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Control2" type="Control" parent="SettingsPanel/Exit"]
+[node name="Control2" type="Control" parent="BeatmapSelectMenu/Exit"]
 clip_contents = true
 layout_mode = 3
 anchors_preset = 0
@@ -235,13 +312,14 @@ offset_left = 32.0
 offset_right = 36.0
 offset_bottom = 32.0
 
-[node name="ColorRect" type="ColorRect" parent="SettingsPanel/Exit/Control2"]
+[node name="ColorRect" type="ColorRect" parent="BeatmapSelectMenu/Exit/Control2"]
 layout_mode = 0
 offset_left = -20.0
 offset_top = 3.0
 offset_right = -18.0
 offset_bottom = 30.0
 
+<<<<<<< Updated upstream
 [node name="Volume" type="Label" parent="SettingsPanel"]
 layout_mode = 0
 offset_left = 97.0
@@ -390,10 +468,20 @@ theme_override_constants/separation = 100
 [connection signal="mouse_exited" from="Panel/Button2" to="." method="_on_button_2_mouse_exited"]
 [connection signal="pressed" from="Panel/Button2" to="." method="_on_button_2_pressed"]
 [connection signal="add_songs_pressed" from="ScrollContainer/Control" to="." method="_on_control_add_songs_pressed"]
+=======
+[connection signal="mouse_entered" from="TopNav/Editor" to="." method="_on_editor_mouse_entered"]
+[connection signal="mouse_exited" from="TopNav/Editor" to="." method="_on_editor_mouse_exited"]
+[connection signal="pressed" from="TopNav/Editor" to="." method="_on_editor_pressed"]
+[connection signal="mouse_entered" from="TopNav/Settings" to="." method="_on_settings_mouse_entered"]
+[connection signal="mouse_exited" from="TopNav/Settings" to="." method="_on_settings_mouse_exited"]
+[connection signal="pressed" from="TopNav/Settings" to="." method="_on_settings_pressed"]
+>>>>>>> Stashed changes
 [connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
-[connection signal="mouse_entered" from="SettingsPanel/Exit" to="SettingsPanel" method="_on_exit_mouse_entered"]
-[connection signal="mouse_exited" from="SettingsPanel/Exit" to="SettingsPanel" method="_on_exit_mouse_exited"]
-[connection signal="pressed" from="SettingsPanel/Exit" to="SettingsPanel" method="_on_exit_pressed"]
-[connection signal="value_changed" from="SettingsPanel/Volume/Master" to="SettingsPanel" method="_on_VolumeSlider_value_changed" binds= [0]]
-[connection signal="value_changed" from="SettingsPanel/Volume/Music" to="SettingsPanel" method="_on_VolumeSlider_value_changed" binds= [1]]
-[connection signal="value_changed" from="SettingsPanel/Volume/Effects" to="SettingsPanel" method="_on_VolumeSlider_value_changed" binds= [2]]
+[connection signal="pressed" from="SelectedBeatmap" to="." method="_on_selected_beatmap_pressed"]
+[connection signal="focus_entered" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_focus_entered"]
+[connection signal="focus_exited" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_focus_exited"]
+[connection signal="mouse_entered" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_mouse_entered"]
+[connection signal="pressed" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="BeatmapSelectMenu/Exit" to="BeatmapSelectMenu" method="_on_exit_mouse_entered"]
+[connection signal="mouse_exited" from="BeatmapSelectMenu/Exit" to="BeatmapSelectMenu" method="_on_exit_mouse_exited"]
+[connection signal="pressed" from="BeatmapSelectMenu/Exit" to="BeatmapSelectMenu" method="_on_exit_pressed"]

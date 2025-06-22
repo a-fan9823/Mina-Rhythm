@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://cixthvy7k4my6"]
 
 [ext_resource type="Texture2D" uid="uid://b12mswtlnuaat" path="res://resources/minapak.svg" id="1_jofcc"]
-[ext_resource type="Script" path="res://main_menu/info_panel.gd" id="1_yicqx"]
+[ext_resource type="Script" uid="uid://cq010ihf5o454" path="res://main_menu/info_panel.gd" id="1_yicqx"]
 [ext_resource type="FontFile" uid="uid://brb0fwgeqxoch" path="res://resources/Vividly-extended-Regular.ttf" id="2_8gdu2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vanxk"]

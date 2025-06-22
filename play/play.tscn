@@ -1,7 +1,7 @@
 [gd_scene load_steps=15 format=3 uid="uid://bcds32gyse1x5"]
 
-[ext_resource type="Script" path="res://play/play.gd" id="1_d4ve6"]
-[ext_resource type="Script" path="res://addons/gde_gozen/video_playback.gd" id="2_ntrav"]
+[ext_resource type="Script" uid="uid://l8vg358nvp35" path="res://play/play.gd" id="1_d4ve6"]
+[ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="2_ntrav"]
 [ext_resource type="FontFile" uid="uid://brb0fwgeqxoch" path="res://resources/Vividly-extended-Regular.ttf" id="2_rig6f"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gt31y"]

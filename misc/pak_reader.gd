@@ -46,9 +46,60 @@ func find_in_config(pak_path:String,unpacked:bool,key:String) -> String:
 		push_error("ERROR: (",key,") is not a valid key!")
 		return ""
 
-func parse_beatmap(beatmap_path: String) -> Array:
-	# Check if the file exists before attempting to open it.
-	if not FileAccess.file_exists(beatmap_path):
+func get_beatmap_path(pak_path:String,beatmap_index:int) -> String:
+	var beatmap_path = ""
+	if song_validator(pak_path,beatmap_index)[1] == true:
+		var pak = DirAccess.open(pak_path)
+		var beatmaps = []
+
+		for file in pak.get_files():
+			if file.to_lower().ends_with(".minamap"):
+				beatmaps.append(file)
+
+		beatmap_path = pak_path+'/'+beatmaps[beatmap_index]
+	return beatmap_path
+
+func song_validator(pak_path:String,beatmap_index:= -1) -> Array: #[0] = pak exists [1] = beatmap exists [2] = config exists(use to check if song is a song)
+	var pak_exists: = true
+	var beatmap_exists: = true
+	var config_exists: = false
+	if !DirAccess.dir_exists_absolute(pak_path):
+		pak_exists = false
+		beatmap_exists = false
+		config_exists = false
+	else:
+		if pak_exists:
+			var pak = DirAccess.open(pak_path)
+			var beatmaps = []
+			
+			var beatmap_path = ""
+			for file in pak.get_files():
+				if file.to_lower() == "pak_config.ini":
+					config_exists = true
+					continue
+				if beatmap_index != -1:
+					if file.to_lower().ends_with(".minamap"):
+						beatmaps.append(file)
+						continue
+			
+			if beatmap_index >= beatmaps.size() || beatmap_index < 0:
+				beatmap_exists = false
+			else:
+				beatmap_path = pak_path+'/'+beatmaps[beatmap_index]
+			
+				if !FileAccess.file_exists(beatmap_path):
+					beatmap_exists = false
+
+	return [pak_exists,beatmap_exists,config_exists]
+
+func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
+	var song_exists = song_validator(pak_path,beatmap_index)
+	var beatmap_path = get_beatmap_path(pak_path,beatmap_index)
+	
+	if song_exists[0] == false:
+		push_error("pak does not exist: " + pak_path)
+		return []
+	if song_exists[1] == false:
 		push_error("Beatmap file does not exist: " + beatmap_path)
 		return []
 	
@@ -155,7 +206,11 @@ func parse_beatmap(beatmap_path: String) -> Array:
 func import_minapak(pak_path:String) -> String:
 	if pak_path.to_lower().ends_with(".osz"):
 		return import_osumania(pak_path)
+<<<<<<< Updated upstream
 	else:
+=======
+	elif pak_path.to_lower().ends_with(".minapak"):
+>>>>>>> Stashed changes
 		var reader = ZIPReader.new() 
 		reader.open(pak_path)
 		var pak_name:String
@@ -183,6 +238,11 @@ func import_minapak(pak_path:String) -> String:
 			while not FileAccess.get_file_as_bytes(str("user://songs/",pak_name,"/pak_config.ini")):
 				await get_tree().process_frame
 		return str("success: ",pak_name)
+<<<<<<< Updated upstream
+=======
+	else:
+		return str("failed: ",pak_path)
+>>>>>>> Stashed changes
 
 func is_song_background_image(pak_path:String,unpacked:bool) -> bool:
 	var bg = find_in_config(pak_path,unpacked,"background")

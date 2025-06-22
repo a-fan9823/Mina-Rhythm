@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://cd3ryimpsmdoj"]
+
+[ext_resource type="Script" uid="uid://6pvptk0hg0p" path="res://settings/toggle_switch.gd" id="1_1p18s"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_kuiph"]
+font_size = 13
+
+[node name="ToggleSwitch" type="CheckBox" node_paths=PackedStringArray("label")]
+script = ExtResource("1_1p18s")
+label = NodePath("Label")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -88.0
+offset_bottom = 23.0
+text = "Show FPS"
+label_settings = SubResource("LabelSettings_kuiph")
+horizontal_alignment = 1
+vertical_alignment = 1

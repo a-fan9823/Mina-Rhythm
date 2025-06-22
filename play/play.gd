@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 var song_path: String = ""
+var beatmap_index:int = -1
 var tap_scene = preload("res://play/single.tscn")
 var hold_scene = preload("res://play/hold.tscn")
 var light_scene = preload("res://play/light.tscn")
@@ -17,8 +18,13 @@ var score: int = 0
 @export var score_text:Label
 var total_possible_score: int = 0
 var total_notes: int = 0
+<<<<<<< Updated upstream
 var auto_play := true
 var extra_info := true
+=======
+var auto_play := bool(Global.Settings.get("autoplay",false))
+var extra_info := bool(Global.Settings.get("extra_info",false))
+>>>>>>> Stashed changes
 var end_time
 const HOLD_ACTIVATION_THRESHOLD = 100
 const HOLD_RELEASE_THRESHOLD = 100
@@ -36,7 +42,7 @@ func _ready() -> void:
 		for child in $hit_line.get_children():
 			if child.has_meta("Lane"):
 				lanes.append(child)
-		var notes = Global.pak_reader.parse_beatmap(str(song_path, "/", Global.pak_reader.find_in_config(song_path,true,"beatmap")))
+		var notes = Global.pak_reader.parse_beatmap(song_path,beatmap_index)
 		for note in notes:
 			total_notes += 1
 			match note.type:
