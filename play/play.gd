@@ -18,13 +18,8 @@ var score: int = 0
 @export var score_text:Label
 var total_possible_score: int = 0
 var total_notes: int = 0
-<<<<<<< Updated upstream
-var auto_play := true
-var extra_info := true
-=======
 var auto_play := bool(Global.Settings.get("autoplay",false))
 var extra_info := bool(Global.Settings.get("extra_info",false))
->>>>>>> Stashed changes
 var end_time
 const HOLD_ACTIVATION_THRESHOLD = 100
 const HOLD_RELEASE_THRESHOLD = 100
@@ -121,7 +116,7 @@ func _ready() -> void:
 		score_text.text = str("Score: ",score," (",get_current_rating(),")")
 		$TextureRect.visible = Global.pak_reader.find_in_config(song_path,true,"bottom_fade") == "true" if true else false
 		var music_path = str(song_path, "/", Global.pak_reader.find_in_config(song_path,true,"song"))
-		
+
 		var loader := AudioLoader.new()
 		var stream = loader.loadfile(music_path)
 		if stream:
@@ -331,7 +326,7 @@ func _process(delta: float) -> void:
 								var actual_release_time = note.get_meta("release_time") if note.has_meta("release_time") else current_time
 								var end_offset = abs(note.get_meta("end_time") - actual_release_time)
 								end_rating = get_rating(end_offset)
-							
+
 							score += score_multipliers[timing_displays.find(end_rating)]
 							if !end_rating.is_empty() and timing_displays.find(end_rating) < 5:
 								update_combo(combo+1)
@@ -348,7 +343,7 @@ func _process(delta: float) -> void:
 			if float(end_time) - current_time <= 1:
 				$AudioStreamPlayer.stop()
 				$VideoPlayback.queue_free()
-	
+
 	if _prev_score != score || _prev_combo != combo: #designed so it doesn't change text every frame and attempt to do it only when needed
 		if score_text:
 			score_text.text = str("Score: ",score," (",get_current_rating()," / ",get_overall_rating(),")\n","Biggest Combo: ",max_combo,"" if not extra_info else str("\nRating Ratio: ", round(ratio * 100.0) / 100.0, "\nPossible Score: ", total_possible_score, "\nTotal notes: ", total_notes,"\nPossible Combo: ",possible_combo))
@@ -387,9 +382,9 @@ func check_input(lane):
 		if note.has_meta("is_note"):
 			#var true_note_pos = note.position.y + note.size.y
 			var note_offset = note.get_meta("time") - current_time
-			
+
 			var note_scoring = score_note(note_offset)
-			
+
 			if note_scoring == null:
 				continue
 			else:
@@ -398,7 +393,7 @@ func check_input(lane):
 						continue
 					if note.get_meta("type") == "hold":
 						#var hit_offset = note.get_meta("time") - current_time
-						
+
 						var judgement = timing_displays[note_scoring]
 						var score_to_add = score_multipliers[note_scoring]
 
@@ -408,7 +403,7 @@ func check_input(lane):
 						else:
 							update_combo(0)
 						score_text.text = str("Score: ",score," (",get_current_rating(),")")
-						
+
 						spawn_judgement(judgement,note.get_meta("lane"))
 						note.set_meta("check_hold", true)
 						note.set_meta("held_since",current_time)
@@ -419,7 +414,7 @@ func check_input(lane):
 						return
 					if note.get_meta("type") != "hold":
 						#var hit_offset = note.get_meta("time") - current_time
-						
+
 						var judgement = timing_displays[note_scoring]
 						var score_to_add = score_multipliers[note_scoring]
 
@@ -432,7 +427,7 @@ func check_input(lane):
 						else:
 							update_combo(0)
 						score_text.text = str("Score: ",score," (",get_current_rating(),")")
-						
+
 						spawn_judgement(judgement,note.get_meta("lane"))
 						note.set_meta("hit", true)
 						note.queue_free()
@@ -538,7 +533,7 @@ func on_lane_released(lane: int) -> void:
 	var hsv = stylebox.bg_color
 	var start_v = hsv.v
 	var target_v = 0.1
-	
+
 	var lane_tween := lane_tweens[lane]
 	if lane_tween != null:
 		lane_tween.kill()

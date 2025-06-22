@@ -9,7 +9,7 @@ func parse_config(pak_path:String,unpacked:bool) -> PackedStringArray:
 	var headers = ["[PackInfo]","[Resources]",""]
 	var config_lines: Array
 	var config:String
-	match unpacked: 
+	match unpacked:
 		true:
 			var confile = FileAccess.open(str(pak_path,"/pak_config.ini"),FileAccess.READ)
 			if confile:
@@ -71,7 +71,7 @@ func song_validator(pak_path:String,beatmap_index:= -1) -> Array: #[0] = pak exi
 		if pak_exists:
 			var pak = DirAccess.open(pak_path)
 			var beatmaps = []
-			
+
 			var beatmap_path = ""
 			for file in pak.get_files():
 				if file.to_lower() == "pak_config.ini":
@@ -81,12 +81,12 @@ func song_validator(pak_path:String,beatmap_index:= -1) -> Array: #[0] = pak exi
 					if file.to_lower().ends_with(".minamap"):
 						beatmaps.append(file)
 						continue
-			
+
 			if beatmap_index >= beatmaps.size() || beatmap_index < 0:
 				beatmap_exists = false
 			else:
 				beatmap_path = pak_path+'/'+beatmaps[beatmap_index]
-			
+
 				if !FileAccess.file_exists(beatmap_path):
 					beatmap_exists = false
 
@@ -95,23 +95,23 @@ func song_validator(pak_path:String,beatmap_index:= -1) -> Array: #[0] = pak exi
 func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
 	var song_exists = song_validator(pak_path,beatmap_index)
 	var beatmap_path = get_beatmap_path(pak_path,beatmap_index)
-	
+
 	if song_exists[0] == false:
 		push_error("pak does not exist: " + pak_path)
 		return []
 	if song_exists[1] == false:
 		push_error("Beatmap file does not exist: " + beatmap_path)
 		return []
-	
+
 	var notes = []
 	var file = FileAccess.open(beatmap_path, FileAccess.READ)
 	if not file:
 		push_error("Failed to open beatmap file: " + beatmap_path)
 		return notes
-	
+
 	var text = file.get_as_text()
 	file.close()
-	
+
 	var lines = text.split("\n")
 	for line in lines:
 		line = line.strip_edges()
@@ -130,7 +130,7 @@ func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
 			if int(data[0]) > 3 or int(data[0]) < 0:
 				push_warning("Invalid lane in tap note line: " + line)
 				continue
-			
+
 			var note = {
 				"type": "tap",
 				"column": int(data[0]),
@@ -148,14 +148,14 @@ func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
 			if int(data[0]) > 3 or int(data[0]) < 0:
 				push_warning("Invalid lane in hold note line: " + line)
 				continue
-			
+
 			var note = {
 				"type": "hold",
 				"column": int(data[0]),
 				"start_time": int(data[1]),
 				"end_time": int(data[2])
 			}
-			
+
 			if note["end_time"] <= note["start_time"]:
 				push_warning("Hold note with non-positive duration: " + line)
 				continue
@@ -171,7 +171,7 @@ func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
 			if int(data[0]) > 3 or int(data[0]) < 0:
 				push_warning("Invalid lane in light note line: " + line)
 				continue
-			
+
 			var note = {
 				"type": "light",
 				"column": int(data[0]),
@@ -189,7 +189,7 @@ func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
 			if int(data[0]) > 3 or int(data[0]) < 0:
 				push_warning("Invalid lane in poly note line: " + line)
 				continue
-			
+
 			var note = {
 				"type": "poly",
 				"column": int(data[0]),
@@ -200,18 +200,14 @@ func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
 			notes.append(note)
 		else:
 			push_warning("Unknown note type or format: " + line)
-	
+
 	return notes
 
 func import_minapak(pak_path:String) -> String:
 	if pak_path.to_lower().ends_with(".osz"):
 		return import_osumania(pak_path)
-<<<<<<< Updated upstream
-	else:
-=======
 	elif pak_path.to_lower().ends_with(".minapak"):
->>>>>>> Stashed changes
-		var reader = ZIPReader.new() 
+		var reader = ZIPReader.new()
 		reader.open(pak_path)
 		var pak_name:String
 		pak_name = find_in_config(pak_path,false,"pack_name")
@@ -238,11 +234,8 @@ func import_minapak(pak_path:String) -> String:
 			while not FileAccess.get_file_as_bytes(str("user://songs/",pak_name,"/pak_config.ini")):
 				await get_tree().process_frame
 		return str("success: ",pak_name)
-<<<<<<< Updated upstream
-=======
 	else:
 		return str("failed: ",pak_path)
->>>>>>> Stashed changes
 
 func is_song_background_image(pak_path:String,unpacked:bool) -> bool:
 	var bg = find_in_config(pak_path,unpacked,"background")
@@ -255,7 +248,7 @@ func import_osumania(path: String) -> String:
 	var reader = ZIPReader.new()
 	if reader.open(path) != OK:
 		return str("failed: osz file may be corrupted")
-	
+
 	var files_to_copy:PackedStringArray = []
 	var beatmaps = []
 	for file in reader.get_files():
@@ -263,7 +256,7 @@ func import_osumania(path: String) -> String:
 			var raw = reader.read_file(file).get_string_from_utf8()
 			var lines = raw.split("\n")
 			var section = ""
-			
+
 			var metadata = {
 				"beatmap_path":file,
 				"artist": "",
@@ -333,14 +326,14 @@ func import_osumania(path: String) -> String:
 					"[HitObjects]":
 						if line != "":
 							metadata.hit_objects.append(line)
-					
+
 					"[Events]":
 						if line.begins_with("0,0,\"") && line.ends_with("\",0,0"):
 							metadata.background = line.trim_prefix("0,0,\"").trim_suffix("\",0,0").strip_edges()
 							files_to_copy.append(metadata.background)
 
 			beatmaps.append(metadata)
-	
+
 	if !DirAccess.dir_exists_absolute(str("user://songs")):
 		if DirAccess.make_dir_absolute(str("user://songs")) != OK:
 			return str("failed: song directory")
@@ -367,13 +360,13 @@ func import_osumania(path: String) -> String:
 		var contents = "[PackInfo]\npack_name="+song_name+"\nicon=pack_icon.svg\n[Resources]\nsong="+beatmaps[0].audio_filename+"\nbeatmap=beatmap.minamap\nbackground="+beatmaps[0].background+"\nbottom_fade=true\ndesc=\ncredits="+beatmaps[0].artist+"\npak_creator="+beatmaps[0].creator+"\n"
 		writefile.store_string(contents)
 		writefile.close()
-		
+
 		var icon = FileAccess.open(str("user://songs/",song_name,"/pack_icon.svg"),FileAccess.WRITE)
 		var src = FileAccess.open("res://resources/osu_logo.svg",FileAccess.READ)
 		icon.store_string(src.get_as_text())
 		icon.close()
 		src.close()
-		
+
 		for beatmap in beatmaps:
 			var file = FileAccess.open(str("user://songs/",song_name,"/",beatmap.beatmap_path.trim_suffix(".osu"),".minamap"),FileAccess.WRITE)
 			var map = parse_osumania(beatmap.hit_objects,beatmap.slider_multiplier,beatmap.first_beat_length)

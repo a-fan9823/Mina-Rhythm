@@ -1,39 +1,16 @@
-<<<<<<< Updated upstream
-[gd_scene load_steps=11 format=3 uid="uid://c2cvll7ctu25a"]
-=======
-[gd_scene load_steps=12 format=3 uid="uid://c2cvll7ctu25a"]
->>>>>>> Stashed changes
+[gd_scene load_steps=8 format=3 uid="uid://c2cvll7ctu25a"]
 
 [ext_resource type="Script" uid="uid://lnngc5m8jdqx" path="res://main_menu/menu.gd" id="1_ufmj0"]
 [ext_resource type="Texture2D" uid="uid://c22gq1expir0n" path="res://resources/editor.svg" id="2_lfsci"]
 [ext_resource type="Texture2D" uid="uid://ds1xqe54sk5pa" path="res://resources/settings2.svg" id="3_b0c7s"]
-<<<<<<< Updated upstream
-[ext_resource type="Script" path="res://main_menu/settings_panel.gd" id="5_1ccvm"]
-[ext_resource type="PackedScene" uid="uid://dj1bm15kejiv4" path="res://main_menu/beatmap_button.tscn" id="6_2vrl2"]
-=======
+[ext_resource type="PackedScene" uid="uid://dj1bm15kejiv4" path="res://main_menu/Buttons/beatmap_button.tscn" id="4_fd84x"]
 [ext_resource type="PackedScene" uid="uid://djyl4hm03dta5" path="res://settings/settings_panel.tscn" id="4_m2eq4"]
-[ext_resource type="Script" uid="uid://d3fcdi0sa5w1e" path="res://main_menu/Buttons/beatmap_button.gd" id="4_xpv0w"]
 [ext_resource type="Script" uid="uid://dbrsvgapman1s" path="res://main_menu/beatmap_menu.gd" id="7_33wq2"]
->>>>>>> Stashed changes
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y4clx"]
 bg_color = Color(0.151276, 0.151276, 0.151276, 1)
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b2exo"]
-bg_color = Color(0.151276, 0.151276, 0.151276, 1)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ekass"]
-
-[sub_resource type="Theme" id="Theme_qfrjs"]
-Button/styles/focus = SubResource("StyleBoxEmpty_ekass")
-
-[sub_resource type="LabelSettings" id="LabelSettings_yb2cg"]
 
 [node name="CanvasLayer" type="CanvasLayer" node_paths=PackedStringArray("scroll_container")]
 follow_viewport_enabled = true
@@ -149,13 +126,6 @@ horizontal_scroll_mode = 0
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="SelectedBeatmap" parent="." instance=ExtResource("6_2vrl2")]
-unique_name_in_owner = true
-offset_left = 641.0
-offset_top = 367.0
-offset_right = 1152.0
-offset_bottom = 463.0
-
 [node name="FileDialog" type="FileDialog" parent="."]
 title = "Open File(s)"
 initial_position = 2
@@ -183,54 +153,21 @@ dialog_autowrap = true
 [node name="TransitionOverlay" type="ColorRect" parent="."]
 visible = false
 top_level = true
-z_index = 6
+z_index = 11
 offset_left = 1152.0
 offset_top = -399.0
 offset_right = 3593.0
 offset_bottom = 1208.0
 color = Color(0, 0, 0, 1)
 
-[node name="SelectedBeatmap" type="Control" parent="." node_paths=PackedStringArray("internal_button", "label")]
+[node name="SelectedBeatmap" parent="." instance=ExtResource("4_fd84x")]
 unique_name_in_owner = true
 visible = false
-layout_mode = 3
-anchors_preset = 0
 offset_left = 641.0
 offset_top = 343.0
 offset_right = 1152.0
 offset_bottom = 439.0
-script = ExtResource("4_xpv0w")
-internal_button = NodePath("PanelContainer/Button")
-label = NodePath("Label")
 id = -1
-
-[node name="PanelContainer" type="PanelContainer" parent="SelectedBeatmap"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -511.0
-offset_bottom = 92.0
-grow_horizontal = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_b2exo")
-
-[node name="Button" type="Button" parent="SelectedBeatmap/PanelContainer"]
-layout_mode = 2
-theme = SubResource("Theme_qfrjs")
-action_mode = 0
-flat = true
-clip_text = true
-
-[node name="Label" type="Label" parent="SelectedBeatmap"]
-layout_mode = 2
-offset_top = 16.0
-offset_right = 511.0
-offset_bottom = 75.0
-label_settings = SubResource("LabelSettings_yb2cg")
-horizontal_alignment = 2
-vertical_alignment = 1
-autowrap_mode = 1
-text_overrun_behavior = 3
 
 [node name="OverlayDim" type="ColorRect" parent="."]
 unique_name_in_owner = true
@@ -319,169 +256,14 @@ offset_top = 3.0
 offset_right = -18.0
 offset_bottom = 30.0
 
-<<<<<<< Updated upstream
-[node name="Volume" type="Label" parent="SettingsPanel"]
-layout_mode = 0
-offset_left = 97.0
-offset_top = 36.0
-offset_right = 200.0
-offset_bottom = 64.0
-text = "Volume"
-label_settings = SubResource("LabelSettings_q27qt")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Master" type="HSlider" parent="SettingsPanel/Volume"]
-layout_mode = 0
-offset_left = 7.0
-offset_top = 41.0
-offset_right = 171.0
-offset_bottom = 57.0
-rounded = true
-metadata/id = 0
-
-[node name="Label" type="Label" parent="SettingsPanel/Volume/Master"]
-layout_mode = 0
-offset_left = -95.0
-offset_top = -4.0
-offset_right = -7.0
-offset_bottom = 19.0
-text = "Master"
-label_settings = SubResource("LabelSettings_o4346")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Value" type="Label" parent="SettingsPanel/Volume/Master"]
-layout_mode = 0
-offset_left = 44.0
-offset_top = 19.0
-offset_right = 132.0
-offset_bottom = 42.0
-text = "PERCENT"
-label_settings = SubResource("LabelSettings_o4346")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Music" type="HSlider" parent="SettingsPanel/Volume"]
-layout_mode = 0
-offset_left = 7.0
-offset_top = 89.0
-offset_right = 171.0
-offset_bottom = 105.0
-rounded = true
-metadata/id = 1
-
-[node name="Label" type="Label" parent="SettingsPanel/Volume/Music"]
-layout_mode = 0
-offset_left = -95.0
-offset_top = -4.0
-offset_right = -7.0
-offset_bottom = 19.0
-text = "Music"
-label_settings = SubResource("LabelSettings_o4346")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Value" type="Label" parent="SettingsPanel/Volume/Music"]
-layout_mode = 0
-offset_left = 44.0
-offset_top = 19.0
-offset_right = 132.0
-offset_bottom = 42.0
-text = "PERCENT"
-label_settings = SubResource("LabelSettings_o4346")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Effects" type="HSlider" parent="SettingsPanel/Volume"]
-layout_mode = 0
-offset_left = 7.0
-offset_top = 137.0
-offset_right = 171.0
-offset_bottom = 153.0
-rounded = true
-metadata/id = 2
-
-[node name="Label" type="Label" parent="SettingsPanel/Volume/Effects"]
-layout_mode = 0
-offset_left = -95.0
-offset_top = -4.0
-offset_right = -7.0
-offset_bottom = 19.0
-text = "Effects"
-label_settings = SubResource("LabelSettings_o4346")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Value" type="Label" parent="SettingsPanel/Volume/Effects"]
-layout_mode = 0
-offset_left = 44.0
-offset_top = 19.0
-offset_right = 132.0
-offset_bottom = 42.0
-text = "PERCENT"
-label_settings = SubResource("LabelSettings_o4346")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BeatmapMenu" type="Control" parent="."]
-unique_name_in_owner = true
-visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_right = 1152.0
-offset_bottom = 648.0
-mouse_filter = 2
-
-[node name="ColorRect" type="ColorRect" parent="BeatmapMenu"]
-layout_mode = 0
-offset_right = 1152.0
-offset_bottom = 648.0
-color = Color(0, 0, 0, 0.619608)
-
-[node name="BeatmapBox" type="PanelContainer" parent="BeatmapMenu"]
-z_index = 7
-layout_mode = 0
-offset_left = 249.0
-offset_top = 73.0
-offset_right = 876.0
-offset_bottom = 621.0
-
-[node name="scroll" type="ScrollContainer" parent="BeatmapMenu/BeatmapBox"]
-layout_mode = 2
-follow_focus = true
-horizontal_scroll_mode = 0
-vertical_scroll_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="BeatmapMenu/BeatmapBox/scroll"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/separation = 100
-
-[connection signal="import" from="." to="ScrollContainer/Control" method="_on_import"]
-[connection signal="mouse_entered" from="Panel/Button" to="." method="_on_button_mouse_entered"]
-[connection signal="mouse_exited" from="Panel/Button" to="." method="_on_button_mouse_exited"]
-[connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]
-[connection signal="mouse_entered" from="Panel/Button2" to="." method="_on_button_2_mouse_entered"]
-[connection signal="mouse_exited" from="Panel/Button2" to="." method="_on_button_2_mouse_exited"]
-[connection signal="pressed" from="Panel/Button2" to="." method="_on_button_2_pressed"]
-[connection signal="add_songs_pressed" from="ScrollContainer/Control" to="." method="_on_control_add_songs_pressed"]
-=======
 [connection signal="mouse_entered" from="TopNav/Editor" to="." method="_on_editor_mouse_entered"]
 [connection signal="mouse_exited" from="TopNav/Editor" to="." method="_on_editor_mouse_exited"]
 [connection signal="pressed" from="TopNav/Editor" to="." method="_on_editor_pressed"]
 [connection signal="mouse_entered" from="TopNav/Settings" to="." method="_on_settings_mouse_entered"]
 [connection signal="mouse_exited" from="TopNav/Settings" to="." method="_on_settings_mouse_exited"]
 [connection signal="pressed" from="TopNav/Settings" to="." method="_on_settings_pressed"]
->>>>>>> Stashed changes
 [connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
 [connection signal="pressed" from="SelectedBeatmap" to="." method="_on_selected_beatmap_pressed"]
-[connection signal="focus_entered" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_focus_entered"]
-[connection signal="focus_exited" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_focus_exited"]
-[connection signal="mouse_entered" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_mouse_entered"]
-[connection signal="pressed" from="SelectedBeatmap/PanelContainer/Button" to="SelectedBeatmap" method="_on_button_pressed"]
 [connection signal="mouse_entered" from="BeatmapSelectMenu/Exit" to="BeatmapSelectMenu" method="_on_exit_mouse_entered"]
 [connection signal="mouse_exited" from="BeatmapSelectMenu/Exit" to="BeatmapSelectMenu" method="_on_exit_mouse_exited"]
 [connection signal="pressed" from="BeatmapSelectMenu/Exit" to="BeatmapSelectMenu" method="_on_exit_pressed"]
