@@ -1,0 +1,78 @@
+[gd_scene load_steps=7 format=3 uid="uid://cju5y5yu2p117"]
+
+[ext_resource type="Script" uid="uid://pmh7dgc214j2" path="res://play/summary/score_box.gd" id="1_vobwb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hyphb"]
+bg_color = Color(0.151276, 0.151276, 0.151276, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+expand_margin_left = 15.0
+expand_margin_top = 15.0
+expand_margin_right = 15.0
+expand_margin_bottom = 15.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_vobwb"]
+font_size = 56
+font_color = Color(0.478428, 0.287536, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h5vtj"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_8ul6j"]
+font_size = 21
+
+[sub_resource type="LabelSettings" id="LabelSettings_5snyr"]
+font_size = 21
+font_color = Color(1, 0.59, 0.59, 1)
+
+[node name="ScoreBox" type="PanelContainer" node_paths=PackedStringArray("_rank", "_score", "_possible_score", "_beatmap_name")]
+offset_right = 268.0
+offset_bottom = 105.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hyphb")
+script = ExtResource("1_vobwb")
+_rank = NodePath("VSplitContainer/HSplitContainer/rank")
+_score = NodePath("VSplitContainer/HSplitContainer/VSplitContainer/score")
+_possible_score = NodePath("VSplitContainer/HSplitContainer/VSplitContainer/possiblescore")
+_beatmap_name = NodePath("VSplitContainer/beatmap")
+
+[node name="VSplitContainer" type="VSplitContainer" parent="."]
+layout_mode = 2
+dragging_enabled = false
+dragger_visibility = 2
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VSplitContainer"]
+layout_mode = 2
+dragging_enabled = false
+dragger_visibility = 2
+
+[node name="rank" type="Label" parent="VSplitContainer/HSplitContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_vobwb")
+
+[node name="VSplitContainer" type="VSplitContainer" parent="VSplitContainer/HSplitContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+theme_override_styles/split_bar_background = SubResource("StyleBoxFlat_h5vtj")
+dragging_enabled = false
+drag_area_margin_begin = 13
+
+[node name="score" type="Label" parent="VSplitContainer/HSplitContainer/VSplitContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_8ul6j")
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="possiblescore" type="Label" parent="VSplitContainer/HSplitContainer/VSplitContainer"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_5snyr")
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="beatmap" type="Label" parent="VSplitContainer"]
+layout_mode = 2

@@ -154,22 +154,7 @@ func save_json_dict(path: String, data: Dictionary) -> void:
 	file.flush()
 	file.close()
 
-func reload_play(song_path: String, beatmap_index: int):
-	var next_scene = preload("res://play/play.tscn")
-
-	get_tree().current_scene.queue_free()
-
-	await get_tree().process_frame
-	await get_tree().process_frame
-
-	var instance = next_scene.instantiate()
-	instance.song_path = song_path
-	instance.beatmap_index = beatmap_index
-
-	get_tree().root.add_child(instance)
-	get_tree().current_scene = instance
-
-func goto_scene(scene:String):
+func goto_scene(scene:String,data:={}):
 	var load_scene = load(scene)
 	if load_scene:
 		get_tree().current_scene.queue_free()
@@ -178,6 +163,17 @@ func goto_scene(scene:String):
 		await get_tree().process_frame
 
 		var instance = load_scene.instantiate()
+		match scene:
+			"res://play/play.tscn":
+				instance.song_path = data.get("song_path")
+				instance.beatmap_index = data.get("beatmap_index")
+			"res://play/summary/summary_screen.tscn":
+				instance.Song_path = data.get("song_path")
+				instance.Beatmap_inx = data.get("beatmap_index")
+				instance.autoplay_used = data.get("autoplay")
+				instance.Rank = data.get("rank")
+				instance.Score = data.get("score")
+				instance.possible_score = data.get("possible_score")
 
 		get_tree().root.add_child(instance)
 		get_tree().current_scene = instance

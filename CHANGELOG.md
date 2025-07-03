@@ -1,1 +1,1 @@
-added a pause menu to gameplay
+Songs actually end now and have a summary menu

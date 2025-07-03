@@ -65,7 +65,7 @@ func _on_confirmation_dialog_confirmed() -> void:
 				var path = root.song_path
 				var beatmap_index = root.beatmap_index
 				await Global.clear_temp()
-				Global.reload_play(path,beatmap_index)
+				Global.goto_scene("res://play/play.tscn",{"song_path":path,"beatmap_index":beatmap_index})
 		3:
 			await Global.clear_temp()
 			Global.goto_scene("res://main_menu/menu.tscn")

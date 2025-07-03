@@ -28,13 +28,15 @@ var max_combo := 0
 var combo := 0
 var ratio
 var possible_combo:=0
-var note_events: Array = []
+var note_events: Array[Vector2] = []
 
 var timing_windows = [2, 25, 50, 100, 250, 400]
 var score_multipliers = [1000, 500, 250, 100, 50, -10]
 
 var in_pause_menu:=false
 var pause_menu:CanvasLayer
+
+var auto_play_used:=false
 
 func _ready() -> void:
 	if song_path:
@@ -144,6 +146,7 @@ func _ready() -> void:
 			time = 0.0
 		if time < 0:
 			time = 0.0
+
 		$AudioStreamPlayer.play(time)
 		if is_image:
 			$BackgroundImage.show()
@@ -151,6 +154,18 @@ func _ready() -> void:
 			$VideoPlayback.show()
 			$VideoPlayback.enable_auto_play = true
 	note_events.sort()
+	if note_events.size() < 1:
+		end_time = 0
+		return
+	if end_time.is_valid_float():
+		end_time = float(end_time)
+		if end_time < 0:
+			end_time = 0
+	else:
+		if $AudioStreamPlayer.stream:
+			end_time = $AudioStreamPlayer.stream.get_length()*1000 #end time based on length of song
+		else:
+			end_time = note_events[note_events.size()-1].x + 2000  #end time based on last note in beatmap
 	Global.Settings_changed.connect(_on_settings_change)
 
 func _on_settings_change():
@@ -164,6 +179,7 @@ func _process(delta: float) -> void:
 	if !in_pause_menu:
 		if auto_play:
 			$auto_play_watermarks.show()
+			auto_play_used = true
 		current_time += delta * 1000.0
 		for note in get_children():
 			if note.has_meta("is_note"):
@@ -350,7 +366,9 @@ func _process(delta: float) -> void:
 			if float(end_time) != 0:
 				if float(end_time) - current_time <= 1:
 					$AudioStreamPlayer.stop()
-					$VideoPlayback.queue_free()
+					$VideoPlayback.is_playing = false
+					$VideoPlayback.hide()
+					Global.goto_scene("res://play/summary/summary_screen.tscn",{"song_path":song_path,"beatmap_index":beatmap_index,"autoplay":auto_play_used,"rank":get_overall_rating(),"score":score,"possible_score":total_possible_score})
 
 		if _prev_score != score || _prev_combo != combo: #designed so it doesn't change text every frame and attempt to do it only when needed
 			if score_text:
