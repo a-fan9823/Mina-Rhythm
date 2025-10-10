@@ -6,6 +6,7 @@ var pak_reader = preload("res://misc/pak_reader.gd").new()
 var IRLS = preload("res://misc/IRLS.gd").new()
 
 var settings_file = "user://user_data/settings.json"
+var save_file = "user://user_data/save.dat"
 
 var Settings = {}
 var default_settings = {"master_volume":0,"music_volume":-12,"effects_volume":0,"target_fps":60,"vsync":DisplayServer.VSyncMode.VSYNC_ENABLED,"show_fps":false,"autoplay":false,"extra_info":false}
@@ -125,6 +126,10 @@ func unsanitize_json(value):
 	else:
 		return value
 
+func save_settings() -> void:
+	emit_signal("Settings_changed")
+	save_json_dict(settings_file,Settings)
+
 func load_json_dict(path: String) -> Dictionary:
 	var file = FileAccess.open(path, FileAccess.READ)
 	if file == null:
@@ -138,10 +143,6 @@ func load_json_dict(path: String) -> Dictionary:
 	else:
 		push_error("JSON file does not contain a dictionary: " + path)
 		return {}
-
-func save_settings() -> void:
-	emit_signal("Settings_changed")
-	save_json_dict(settings_file,Settings)
 
 func save_json_dict(path: String, data: Dictionary) -> void:
 	var file = FileAccess.open(path, FileAccess.WRITE)
@@ -171,9 +172,42 @@ func goto_scene(scene:String,data:={}):
 				instance.Song_path = data.get("song_path")
 				instance.Beatmap_inx = data.get("beatmap_index")
 				instance.autoplay_used = data.get("autoplay")
+				instance.combo = data.get("combo")
 				instance.Rank = data.get("rank")
 				instance.Score = data.get("score")
 				instance.possible_score = data.get("possible_score")
 
 		get_tree().root.add_child(instance)
 		get_tree().current_scene = instance
+
+func save_obscured_json(path: String, data: Dictionary) -> void:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("Failed to open file for writing: " + path)
+		return
+
+	var json_text := JSON.stringify(data, "\t")
+	var encoded := Marshalls.utf8_to_base64(json_text)
+	file.store_string(encoded)
+	file.flush()
+	file.close()
+
+func load_obscured_json(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		push_error("File not found: " + path)
+		return {}
+
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_error("Failed to open file for reading: " + path)
+		return {}
+
+	var encoded := file.get_as_text()
+	var text := Marshalls.base64_to_utf8(encoded)
+	var result = JSON.parse_string(text)
+
+	if result is Dictionary:
+		return result
+	else:
+		push_error("Obscured JSON did not contain a dictionary: " + path)
+		return {}

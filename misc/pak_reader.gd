@@ -2,8 +2,9 @@ extends Node
 
 class_name PakFileReader
 const prefixes = ["icon=","pack_name=","song=","background=","preview_img=","beatmap=","info=","song_start=","song_end=","bottom_fade=","pak_creator=","credits=","desc="]
+const score_multipliers = [1000, 500, 250, 100, 50, -10]
 
-var supported_image_extensions := ["png","jpg","jpeg","bmp","tga","webp","tif","tiff","gif","hdr","exr","tex","stex","ctex"]
+const supported_image_extensions := ["png","jpg","jpeg","bmp","tga","webp","tif","tiff","gif","hdr","exr","tex","stex","ctex"]
 
 func parse_config(pak_path:String,unpacked:bool) -> PackedStringArray:
 	var headers = ["[PackInfo]","[Resources]",""]
@@ -202,6 +203,21 @@ func parse_beatmap(pak_path: String, beatmap_index: int) -> Array:
 			push_warning("Unknown note type or format: " + line)
 
 	return notes
+
+func get_possible_score(pak_path: String, beatmap_index: int) -> int:
+	var total_possible_score:int = 0;
+	var notes = Global.pak_reader.parse_beatmap(pak_path,beatmap_index)
+	for note in notes:
+		match note.type:
+			"tap":
+				total_possible_score += score_multipliers[0]
+			"hold":
+				total_possible_score += score_multipliers[0] * 2
+			"light":
+				total_possible_score += score_multipliers[2]
+			"poly":
+				total_possible_score += score_multipliers[1]
+	return total_possible_score;
 
 func import_minapak(pak_path:String) -> String:
 	if pak_path.to_lower().ends_with(".osz"):

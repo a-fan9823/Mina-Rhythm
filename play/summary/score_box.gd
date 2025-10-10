@@ -4,6 +4,7 @@ extends PanelContainer
 @export var _score:Node
 @export var _possible_score:Node
 @export var _beatmap_name:Node
+@export var _combo:Node
 
 
 var rank: String:
@@ -40,6 +41,10 @@ var score: String:
 var possible_score: String:
 	set(value):
 		_possible_score.text = format_number(value)
+
+var combo: String:
+	set(value):
+		_combo.text = "Biggest combo: "+format_number(value)
 
 var beatmap_name:String:
 	set(value):

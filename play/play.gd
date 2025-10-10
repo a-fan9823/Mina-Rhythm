@@ -31,7 +31,7 @@ var possible_combo:=0
 var note_events: Array[Vector2] = []
 
 var timing_windows = [2, 25, 50, 100, 250, 400]
-var score_multipliers = [1000, 500, 250, 100, 50, -10]
+var score_multipliers = Global.pak_reader.score_multipliers
 
 var in_pause_menu:=false
 var pause_menu:CanvasLayer
@@ -368,7 +368,7 @@ func _process(delta: float) -> void:
 					$AudioStreamPlayer.stop()
 					$VideoPlayback.is_playing = false
 					$VideoPlayback.hide()
-					Global.goto_scene("res://play/summary/summary_screen.tscn",{"song_path":song_path,"beatmap_index":beatmap_index,"autoplay":auto_play_used,"rank":get_overall_rating(),"score":score,"possible_score":total_possible_score})
+					Global.goto_scene("res://play/summary/summary_screen.tscn",{"song_path":song_path,"beatmap_index":beatmap_index,"autoplay":auto_play_used,"rank":get_overall_rating(),"score":score,"possible_score":total_possible_score,"combo":max_combo})
 
 		if _prev_score != score || _prev_combo != combo: #designed so it doesn't change text every frame and attempt to do it only when needed
 			if score_text:

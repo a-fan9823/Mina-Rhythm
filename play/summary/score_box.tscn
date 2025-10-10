@@ -31,7 +31,7 @@ font_size = 21
 font_size = 21
 font_color = Color(1, 0.59, 0.59, 1)
 
-[node name="ScoreBox" type="PanelContainer" node_paths=PackedStringArray("_rank", "_score", "_possible_score", "_beatmap_name")]
+[node name="ScoreBox" type="PanelContainer" node_paths=PackedStringArray("_rank", "_score", "_possible_score", "_beatmap_name", "_combo")]
 offset_right = 268.0
 offset_bottom = 105.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_hyphb")
@@ -39,7 +39,8 @@ script = ExtResource("1_vobwb")
 _rank = NodePath("VSplitContainer/HSplitContainer/rank")
 _score = NodePath("VSplitContainer/HSplitContainer/VSplitContainer/score")
 _possible_score = NodePath("VSplitContainer/HSplitContainer/VSplitContainer/possiblescore")
-_beatmap_name = NodePath("VSplitContainer/beatmap")
+_beatmap_name = NodePath("VSplitContainer/VSplitContainer/beatmap")
+_combo = NodePath("VSplitContainer/VSplitContainer/combo")
 
 [node name="VSplitContainer" type="VSplitContainer" parent="."]
 layout_mode = 2
@@ -74,5 +75,13 @@ label_settings = SubResource("LabelSettings_5snyr")
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="beatmap" type="Label" parent="VSplitContainer"]
+[node name="VSplitContainer" type="VSplitContainer" parent="VSplitContainer"]
+layout_mode = 2
+dragging_enabled = false
+dragger_visibility = 2
+
+[node name="beatmap" type="Label" parent="VSplitContainer/VSplitContainer"]
+layout_mode = 2
+
+[node name="combo" type="Label" parent="VSplitContainer/VSplitContainer"]
 layout_mode = 2

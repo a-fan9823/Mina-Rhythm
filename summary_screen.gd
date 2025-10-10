@@ -9,6 +9,8 @@ extends CanvasLayer
 @export var Score:int
 @export var possible_score:int
 
+@export var combo:int
+
 var audioplayer:AudioStreamPlayer
 var videoplayer:VideoPlayback
 var backgroundimage:TextureRect
@@ -76,6 +78,8 @@ func _ready() -> void:
 	score_box.rank = Rank
 	score_box.score = str(Score)
 	score_box.possible_score = str(possible_score)
+	score_box.combo = str(combo)
+	save_song_data()
 	
 	var song_dir = DirAccess.open(Song_path)
 	var beatmap_name = "{ERR NOT FOUND!}"
@@ -163,3 +167,47 @@ func _on_exit_mouse_exited() -> void:
 	tween = create_tween()
 	tween.set_trans(Tween.TRANS_QUINT)
 	tween.tween_property($Exit/Control/Label,"position:x",-380,0.4).set_ease(Tween.EASE_IN_OUT)
+
+
+func save_song_data() -> void:
+	var save_data := Global.load_obscured_json(Global.save_file)
+	var key := "%s|%d" % [Song_path, Beatmap_inx]
+
+	var new_data := {
+		"rank": Rank,
+		"score": Score,
+		"possible_score": possible_score,
+		"combo": combo,
+		"autoplay_used": autoplay_used
+	}
+
+	var existing_data = save_data.get(key, null)
+	if existing_data:
+		if not existing_data.get("autoplay_used", false) and autoplay_used:
+			return
+
+		var existing_score = existing_data.get("score", 0)
+		var existing_rank = existing_data.get("rank", "F")
+
+		if Score < existing_score and _compare_rank(Rank, existing_rank) <= 0:
+			return
+
+	save_data[key] = new_data
+	Global.save_obscured_json(Global.save_file, save_data)
+
+
+func _compare_rank(a: String, b: String) -> int:
+	var rank_order = {
+		"SP": 10,
+		"SSS": 9,
+		"SS": 8,
+		"S": 7,
+		"P": 6,
+		"A": 5,
+		"B": 4,
+		"C": 3,
+		"D": 2,
+		"F": 1,
+		"N/A": 0
+	}
+	return rank_order.get(a, 0) - rank_order.get(b, 0)

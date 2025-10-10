@@ -3,6 +3,7 @@ extends CanvasLayer
 @export var EDITOR_SCENE:= preload("res://editor/editor.tscn")
 @export var SONG_BUTTON_SCENE:= preload("res://main_menu/Buttons/song_button.tscn")
 @export var SONG_INFO_SCENE:= preload("res://main_menu/info_panel.tscn")
+@export var SCORE_BOX_SCENE:= preload("res://play/summary/score_box.tscn")
 @export var PLAY_SCENE:= preload("res://play/play.tscn")
 @export var BEATMAP_BUTTON_SCENE:= preload("res://main_menu/Buttons/beatmap_button.tscn")
 @export var scroll_container : ScrollContainer
@@ -16,7 +17,9 @@ var audioplayer:AudioStreamPlayer
 var videoplayer:VideoPlayback
 var backgroundimage:TextureRect
 var curr_info_box:Node
+var curr_score_box:Node
 
+var minamaps:PackedStringArray = []
 var in_beatmap_menu:= false
 var beatmap_selected_once:=false # Used to fix issue with beatmap being pre-selected causing bugs
 
@@ -439,6 +442,8 @@ func scroll_to_selected(button:Control):
 		info_box.position.y = 440
 		if(curr_info_box):
 			curr_info_box.free()
+		if(curr_score_box):
+			curr_score_box.free()
 		curr_info_box = info_box
 		add_child(info_box)
 		var tween = create_tween()
@@ -448,7 +453,7 @@ func scroll_to_selected(button:Control):
 		if !is_add_song_button:
 			var song_dir = DirAccess.open(song_path)
 			if song_dir:
-				var minamaps:PackedStringArray = []
+				minamaps = [];
 				for file in song_dir.get_files():
 					if file.to_lower().ends_with(".minamap"):
 						minamaps.append(file)
@@ -465,6 +470,8 @@ func scroll_to_selected(button:Control):
 				elif minamaps.size() <= 1:
 					%SelectedBeatmap.hide()
 					selected_beatmap_index = 0
+				if (selected_beatmap_index != -1 && minamaps.size() > 0):
+					spawn_score_box(song_path,song_dir)
 	else:
 		song_missing(button.id)
 
@@ -498,6 +505,7 @@ func _on_beatmap_selected(index: int):
 		%BeatmapSelectMenu.hide()
 		%SelectedBeatmap.label.text = button_node.label.text
 		%OverlayDim.hide()
+		spawn_score_box(songs[selected_index].get("Path",""),DirAccess.dir_exists_absolute(songs[selected_index].get("Path","")))
 
 
 # This function is a hot mess but it works well enough for me to care
@@ -529,3 +537,33 @@ func _input(event: InputEvent) -> void:
 					if selected_index+1 < buttons.size():
 							buttons[selected_index+1]._on_button_pressed()
 							buttons[selected_index]._on_button_mouse_entered()
+
+func spawn_score_box(song_path,song_dir) -> void:
+	var save_data = Global.load_obscured_json(Global.save_file)
+	var key = "%s|%d" % [song_path, selected_beatmap_index]
+	var song_data = save_data.get(key,{})
+
+	var score_box = SCORE_BOX_SCENE.instantiate()
+	score_box.rank = song_data.get("rank", "N/A")
+	score_box.score = str(song_data.get("score", 0))
+	score_box.possible_score = str(song_data.get("possible_score", Global.pak_reader.get_possible_score(song_path,selected_beatmap_index)))
+	score_box.combo = str(song_data.get("combo", 0))
+
+	var beatmap_name = "{ERR NOT FOUND!}"
+	if song_dir:
+		if minamaps.size() == 1:
+			beatmap_name = ""
+		elif selected_beatmap_index > -1 and selected_beatmap_index < minamaps.size():
+			beatmap_name = minamaps[selected_beatmap_index].trim_suffix(".minamap")
+	score_box.beatmap_name = beatmap_name
+
+	score_box.position.x = -500
+	score_box.position.y = 496
+	if(curr_score_box):
+		curr_score_box.free()
+	curr_score_box = score_box
+	add_child(score_box)
+
+	var score_tween = create_tween()
+	score_tween.set_trans(Tween.TRANS_SINE)
+	score_tween.tween_property(score_box, "position:x", 48, 0.3).set_ease(Tween.EASE_OUT)
