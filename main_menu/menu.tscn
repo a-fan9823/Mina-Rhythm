@@ -225,7 +225,6 @@ text = "X"
 
 [node name="Control" type="Control" parent="BeatmapSelectMenu/Exit"]
 clip_contents = true
-layout_mode = 3
 anchors_preset = 0
 offset_left = 36.0
 offset_right = 380.0
@@ -243,7 +242,6 @@ vertical_alignment = 1
 
 [node name="Control2" type="Control" parent="BeatmapSelectMenu/Exit"]
 clip_contents = true
-layout_mode = 3
 anchors_preset = 0
 offset_left = 32.0
 offset_right = 36.0
