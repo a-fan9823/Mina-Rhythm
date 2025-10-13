@@ -35,6 +35,7 @@ var score_multipliers = Global.pak_reader.score_multipliers
 
 var in_pause_menu:=false
 var pause_menu:CanvasLayer
+var pause_buffer:=false
 
 var auto_play_used:=false
 
@@ -377,13 +378,16 @@ func _process(delta: float) -> void:
 			_prev_combo = combo
 
 func pause_song():
-	in_pause_menu = true
-	if $VideoPlayback.visible:
-		$VideoPlayback.pause()
-	$AudioStreamPlayer.stream_paused = true
-	var pause = pause_scene.instantiate()
-	add_child(pause)
-	pause_menu=pause
+	if !pause_buffer:
+		in_pause_menu = true
+		if $VideoPlayback.visible:
+			$VideoPlayback.pause()
+		$AudioStreamPlayer.stream_paused = true
+		var pause = pause_scene.instantiate()
+		add_child(pause)
+		pause_menu=pause
+	else:
+		pause_buffer = false
 
 func unpause_song():
 	in_pause_menu = false

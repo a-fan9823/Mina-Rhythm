@@ -60,6 +60,13 @@ func init_general_settings():
 	extra_toggle.connect("toggled",Callable(self,"_on_toggle_value_changed").bind("extra_info"))
 	GeneralSection.add_child(extra_toggle)
 	
+	var quick_toggle = SettingsToggle.instantiate()
+	quick_toggle.label.text = "Quick Play"
+	quick_toggle.position.y += 50*4
+	quick_toggle.set_meta("key","quick_play")
+	quick_toggle.connect("toggled",Callable(self,"_on_toggle_value_changed").bind("quick_play"))
+	GeneralSection.add_child(quick_toggle)
+	
 	var value = Global.Settings.get("show_fps",false)
 	_on_toggle_value_changed(value,"show_fps")
 	
@@ -68,6 +75,9 @@ func init_general_settings():
 	
 	var extravalue = Global.Settings.get("extra_info",false)
 	_on_toggle_value_changed(extravalue,"extra_info")
+	
+	var quickvalue = Global.Settings.get("quick_play",false)
+	_on_toggle_value_changed(quickvalue,"quick_play")
 
 func _on_VolumeSlider_value_changed(value:float,index:int):
 	var slider = VolumeSection.get_child(index)
@@ -104,6 +114,18 @@ func _on_exit_pressed() -> void:
 	await tween.finished
 	%OverlayDim.hide()
 	self.hide()
+
+func _input(event):
+	if self.visible:
+		if event is InputEventKey:
+			if event.is_action_pressed("ui_cancel"):
+				$Panel/Exit.disabled = true
+				var tween = create_tween()
+				tween.set_trans(Tween.TRANS_QUINT)
+				tween.tween_property($Panel,"position:x",1152,0.5).set_ease(Tween.EASE_OUT)
+				await tween.finished
+				%OverlayDim.hide()
+				self.hide()
 
 func _on_exit_mouse_entered() -> void:
 	var tween = create_tween()

@@ -2,6 +2,7 @@ extends CanvasLayer
 
 @export var BUTTON_SCENE:PackedScene
 const options:= ["Resume","Retry","Settings","Main Menu","Quit"]
+var quick_play := bool(Global.Settings.get("quick_play",false))
 
 func _ready() -> void:
 	for option in options:
@@ -10,6 +11,7 @@ func _ready() -> void:
 		button.id = options.find(option)
 		button.connect("pressed", Callable(self, "_on_option_selected"))
 		$Menu/VBoxContainer.add_child(button)
+	Global.Settings_changed.connect(_on_settings_change)
 
 func confirm_dialog(dialog:String,option:int):
 	$ConfirmationDialog.dialog_text = dialog
@@ -17,17 +19,28 @@ func confirm_dialog(dialog:String,option:int):
 	$ConfirmationDialog.set_meta("option",option)
 	$ConfirmationDialog.show()
 
+func _on_settings_change():
+	quick_play = bool(Global.Settings.get("quick_play",false))
+
 func _on_option_selected(id:int):
 	match id:
 		0:
-			$ColorRect.hide()
-			$Menu.hide()
-			$OverlayDim.hide()
-			$SettingsPanel.hide()
-			$Label.show()
-			$Timer.start(3)
+			if quick_play:
+				get_tree().current_scene.pause_buffer = true
+				_on_timer_timeout()
+			else:
+				$ColorRect.hide()
+				$Menu.hide()
+				$OverlayDim.hide()
+				$SettingsPanel.hide()
+				$Label.show()
+				$Timer.start(3)
 		1:
-			confirm_dialog("Are you sure you want to restart this song? You will lose all un-saved progress!",id)
+			if get_tree().current_scene.max_combo == 0:
+				$ConfirmationDialog.set_meta("option",1)
+				_on_confirmation_dialog_confirmed()
+			else:
+				confirm_dialog("Are you sure you want to restart this song? You will lose all un-saved progress!",id)
 		2:
 			$SettingsPanel.show()
 			%OverlayDim.show()
@@ -37,7 +50,11 @@ func _on_option_selected(id:int):
 			await tween.finished
 			$SettingsPanel/Panel/Exit.disabled = false
 		3:
-			confirm_dialog("Are you sure you want to quit to main menu? You will lose all un-saved progress!",id)
+			if get_tree().current_scene.max_combo == 0:
+				$ConfirmationDialog.set_meta("option",3)
+				_on_confirmation_dialog_confirmed()
+			else:
+				confirm_dialog("Are you sure you want to quit to main menu? You will lose all un-saved progress!",id)
 		4:
 			confirm_dialog("Are you sure you want to quit to desktop? You will lose all un-saved progress!",id)
 		_:
@@ -50,6 +67,18 @@ func _process(_delta: float) -> void:
 func _on_timer_timeout() -> void:
 	if get_tree().current_scene.has_method("unpause_song"):
 		get_tree().current_scene.unpause_song()
+		
+func _input(event):
+	if !$Timer.is_stopped():
+		if event is InputEventKey:
+			if event.is_action_pressed("ui_cancel"):
+				if get_tree().current_scene.has_method("pause_song"):
+					get_tree().current_scene.pause_song()
+					self.free()
+	else:
+		if event is InputEventKey:
+			if event.is_action_pressed("ui_cancel"):
+				_on_option_selected(0)
 
 
 func _on_confirmation_dialog_canceled() -> void:
